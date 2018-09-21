@@ -1,0 +1,4 @@
+import requests
+
+if __name__ == "__main__"    req = requests.get("http://")
+    print(req.text)
