@@ -1,4 +1,5 @@
 #https://github.com/mxgxw/MFRC522-python/blob/master/MFRC522.py
+#djkfnqwenf
 import RPi.GPIO as GPIO
 import MFRC522
 import signal
