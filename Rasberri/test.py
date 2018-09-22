@@ -1,63 +1,46 @@
 #https://github.com/mxgxw/MFRC522-python/blob/master/MFRC522.py
-#djkfnqwenf
+import urllib.request
 import RPi.GPIO as GPIO
-import MFRC522
-import signal
+import time
 
-continue_reading = True
-
-# Capture SIGINT for cleanup when the script is aborted
-def end_read(signal,frame):
-    global continue_reading
-    print("Ctrl+C captured, ending read.")
-    continue_reading = False
-    GPIO.cleanup()
-
-# Hook the SIGINT
-signal.signal(signal.SIGINT, end_read)
-
-# Create an object of the class MFRC522
-MIFAREReader = MFRC522.MFRC522()
+GPIO.setmode(GPIO.BCM)
 GPIO.setup(23, GPIO.OUT)
 GPIO.setup(24, GPIO.OUT)
 GPIO.setup(18, GPIO.OUT)
 p = GPIO.PWM(18, 50)
 p.start(0)
-# Welcome message
-print("Welcome to the MFRC522 data read example")
-print("Press Ctrl-C to stop.")
+time.sleep(1)
 
-# This loop keeps checking for chips. If one is near it will get the UID and authenticate
-while continue_reading:
-    
-    # Scan for cards    
-    (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
+lock = True
 
-    # If a card is found
-    if status == MIFAREReader.MI_OK:
-        print("Card detected")
-    
-    # Get the UID of the card
-    (status,uid) = MIFAREReader.MFRC522_Anticoll()
+url = 'http://192.168.0.6:8000'
+hdr = {'User-Agent': 'Mozilla/5.0', 'referer' : 'http://192.168.0.6:8000'}
+Data = b'111 close'
 
-    # If we have the UID, continue
-    if status == MIFAREReader.MI_OK:
+req = urllib.request.Request(url=url,data=Data,method='PUT',headers=hdr)
+f = urllib.request.urlopen(req)
 
-        # Print UID
-        print("Card read UID: %s,%s,%s,%s" % (uid[0], uid[1], uid[2], uid[3]))
-    
-        # This is the default key for authentication
-        key = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]
-        
-        # Select the scanned tag
-        MIFAREReader.MFRC522_SelectTag(uid)
+print(f.status)
+print(f.reason)
+response = f.read()
+response = response.decode()
+print(response)
 
-        # Authenticate
-        status = MIFAREReader.MFRC522_Auth(MIFAREReader.PICC_AUTHENT1A, 8, key, uid)
-
-        # Check if authenticated
-        if status == MIFAREReader.MI_OK:
-            MIFAREReader.MFRC522_Read(8)
-            MIFAREReader.MFRC522_StopCrypto1()
-        else:
-            print("Authentication error")
+if response == "as":
+    if not lock:
+        p.ChangeDutyCycle(1)
+        print("angle : 1")
+        lock = True
+    elif lock:
+        p.ChangeDutyCycle(8)
+        print("angle : 8")
+        lock = False
+    GPIO.output(23,True)
+    time.sleep(1)
+    GPIO.output(23,False)
+else:
+    GPIO.output(24,True)
+    time.sleep(1)
+    GPIO.output(24,False)
+p.stop()
+GPIO.cleanup()

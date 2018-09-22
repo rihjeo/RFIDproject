@@ -2,9 +2,13 @@ import RPi.GPIO as GPIO
 import MFRC522
 import signal
 import time
-import requests
+import urllib.request
 
 lock = False
+
+url = 'http://192.168.0.6:8000'
+hdr = {'User-Agent': 'Mozilla/5.0', 'referer' : 'http://192.168.0.6:8000'}
+Data = b'qnqnqn, 123'
 
 continue_reading = True
 
@@ -12,6 +16,7 @@ def end_read(signal,frame):
     global continue_reading
     print ("Ctrl+C captured, ending read.")
     continue_reading = False
+    p.stop()
     GPIO.cleanup()
 
 signal.signal(signal.SIGINT, end_read)
@@ -33,7 +38,6 @@ while continue_reading:
     (status,uid) = MIFAREReader.MFRC522_Anticoll()
     # If we have the UID, continue
     if status == MIFAREReader.MI_OK:
-        print("1")
         (status,uid) = MIFAREReader.MFRC522_Anticoll()
         real = ""
         # Print UID
@@ -41,15 +45,33 @@ while continue_reading:
             a = str(i)
             real = real + a
         print(real)
-        req = requests.get("http://192.168.0.245:8000")
-        if req.text == "HUFS":
+        req = requests.get("http://192.168.0.245:8000/check/"+real)
+        if req.text == "ok":
             if not lock:
                 p.ChangeDutyCycle(1)
                 print("angle : 1")
+                x = real + " " + "close"
+                x = x.encode()
+                eq = urllib.request.Request(url=url,data=x,method='PUT',headers=hdr)
+                f = urllib.request.urlopen(req)
+                print(f.status)
+                print(f.reason)
+                response = f.read()
+                response = response.decode()
+                print(response)
                 lock = True
             elif lock:
                 p.ChangeDutyCycle(8)
                 print("angle : 8")
+                x = real + " " + "open"
+                x = x.encode()
+                eq = urllib.request.Request(url=url,data=x,method='PUT',headers=hdr)
+                f = urllib.request.urlopen(req)
+                print(f.status)
+                print(f.reason)
+                response = f.read()
+                response = response.decode()
+                print(response)
                 lock = False
             GPIO.output(23,True)
             time.sleep(1)
@@ -59,4 +81,4 @@ while continue_reading:
             time.sleep(1)
             GPIO.output(24,False)
             
-    
+
