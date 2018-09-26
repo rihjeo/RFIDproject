@@ -7,7 +7,7 @@ from datetime import datetime
 # Create your views here.
 @csrf_exempt
 def index(request):
-    if request.method == "PUT" or "GET":
+    if request.method == "PUT":
         try:
             message = request.read()
             message = message.decode()
@@ -28,19 +28,17 @@ def index(request):
             statusData = None
             return HttpResponse("u")
         return HttpResponse("Modify")
+    elif request.method == "GET":
+        return render(request, 'index.HTML')
 def status(request):
     statusDB = Status.objects.all()
-    str = ''
-    for s in statusDB:
-        str += "SerialNum {} Status {}<br>".format(s.serial, s.status)
-    return HttpResponse(str)
+    context = {'statusDB' : statusDB}
+    return render(request, 'status.HTML', context)
 
 def log(request):
     rfidDB = RfidDB.objects.all()
-    str = ''
-    for log in rfidDB:
-        str += "SerialNum {} Status {} Time {}<br>".format(log.serial, log.status, log.time)
-    return HttpResponse(str)
+    context = {'rfidDB' : rfidDB}
+    return render(request, 'log.HTML', context)
 
 def check(request, serialNum):
     statusDB = Status.objects.all()
