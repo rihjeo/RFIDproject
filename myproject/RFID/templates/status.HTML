@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>RFID status</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="192.168.219.193">Hufs 3 Team</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li ><a href="http://192.168.219.193">Home</a></li>
+      <li class="active"><a href="http://192.168.219.193/status">Status</a></li>
+      <li ><a href="http://192.168.219.193/log">Log</a></li>
+      <li><a href="https://github.com/rihjeo/RFIDproject/blob/master/%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C.pptx?raw=true">Presentation</a></li>
+    </ul>
+  </div>
+</nav>
+  
+<div class="container">
+  <h2>RFID Status</h2>
+  <p></p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Serial Number</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for st in statusDB %}
+      <tr>
+        <td>{{st.serial}}</td>
+        <td>{{st.status}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>
