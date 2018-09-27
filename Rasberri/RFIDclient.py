@@ -9,7 +9,7 @@ lock = False
 
 url = 'http://192.168.0.6:8000'
 hdr = {'User-Agent': 'Mozilla/5.0', 'referer' : 'http://192.168.0.6:8000'}
-Data = b'qnqnqn, 123'
+Data = b'111 open'
 
 continue_reading = True
 
