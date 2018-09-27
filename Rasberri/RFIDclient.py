@@ -3,6 +3,7 @@ import MFRC522
 import signal
 import time
 import urllib.request
+import requests
 
 lock = False
 
@@ -52,7 +53,7 @@ while continue_reading:
                 print("angle : 1")
                 x = real + " " + "close"
                 x = x.encode()
-                eq = urllib.request.Request(url=url,data=x,method='PUT',headers=hdr)
+                req = urllib.request.Request(url=url,data=x,method='PUT',headers=hdr)
                 f = urllib.request.urlopen(req)
                 print(f.status)
                 print(f.reason)
@@ -65,7 +66,7 @@ while continue_reading:
                 print("angle : 8")
                 x = real + " " + "open"
                 x = x.encode()
-                eq = urllib.request.Request(url=url,data=x,method='PUT',headers=hdr)
+                req = urllib.request.Request(url=url,data=x,method='PUT',headers=hdr)
                 f = urllib.request.urlopen(req)
                 print(f.status)
                 print(f.reason)
